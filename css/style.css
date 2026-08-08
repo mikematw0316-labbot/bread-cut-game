@@ -65,7 +65,7 @@ html, body {
 }
 
 .stage {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,7 +74,8 @@ html, body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
-  min-height: 320px;
+  min-height: 240px;
+  max-height: 46vh;
 }
 #board { display: block; touch-action: none; }
 
@@ -194,4 +195,8 @@ button {
   .title { font-size: 22px; letter-spacing: 6px; }
   .player-count, .bread-grid { gap: 6px; }
   .pc-btn { padding: 10px 0; font-size: 15px; }
+  .stage { min-height: 200px; max-height: 38vh; }
+  #app { padding: 10px 12px 16px; }
+  .message { margin: 8px 0; padding: 8px 12px; }
+  .bread-cell span { font-size: 10px; }
 }
