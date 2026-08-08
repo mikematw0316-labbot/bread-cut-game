@@ -216,3 +216,87 @@ export function drawPlatePieces(ctx, pieces, zone) {
     drawPiece(ctx, moved, pc.breadIdx, { showDecor: false });
   });
 }
+
+// 把一組麵包塊等比縮放塞進一個方框（保留彼此相對位置）。回傳每格中心供動畫定位。
+function drawPiecesInBox(ctx, pieces, box, scaleBoost = 0) {
+  if (!pieces.length) return null;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const pc of pieces) for (const p of pc.poly) {
+    if (p.x < minX) minX = p.x; if (p.y < minY) minY = p.y;
+    if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y;
+  }
+  const w = maxX - minX || 1, h = maxY - minY || 1;
+  let s = Math.min(box.w / w, box.h / h) * 0.9;
+  s *= (1 + scaleBoost);
+  const cx0 = (minX + maxX) / 2, cy0 = (minY + maxY) / 2;
+  const bx = box.x + box.w / 2, by = box.y + box.h / 2;
+  for (const pc of pieces) {
+    const moved = pc.poly.map((p) => ({ x: bx + (p.x - cx0) * s, y: by + (p.y - cy0) * s }));
+    drawPiece(ctx, moved, pc.breadIdx, { showDecor: false });
+  }
+  return { x: bx, y: by };
+}
+
+// 底部「戰績列」：每位玩家已獲得的麵包塊（記憶輔助）＋名次色條＋累計面積。
+// opts: { activeSeat, pulseSeat, pulseAmt } → 高亮輪到者、獲得瞬間放大脈衝。
+export function drawOwnedRoster(ctx, g, z, opts = {}) {
+  if (!z || z.h <= 4) return;
+  const N = g.N;
+  const cw = z.w / N;
+  ctx.save();
+  ctx.fillStyle = 'rgba(214,205,182,0.18)';
+  ctx.fillRect(z.x, z.y, z.w, z.h);
+  ctx.strokeStyle = 'rgba(180,165,135,0.5)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(z.x, z.y + 0.5); ctx.lineTo(z.x + z.w, z.y + 0.5); ctx.stroke();
+
+  for (let i = 0; i < N; i++) {
+    const p = g.players[i];
+    const x0 = z.x + cw * i;
+    const isLast = i === N - 1;
+    const isActive = opts.activeSeat === i;
+    const pulse = opts.pulseSeat === i ? (opts.pulseAmt || 0) : 0;
+
+    if (isActive) {
+      ctx.fillStyle = 'rgba(166,152,124,0.20)';
+      ctx.fillRect(x0, z.y, cw, z.h);
+      ctx.strokeStyle = 'rgba(166,152,124,0.85)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, x0 + 2, z.y + 2, cw - 4, z.h - 4, 8);
+      ctx.stroke();
+    }
+    if (i > 0) {
+      ctx.strokeStyle = 'rgba(180,165,135,0.28)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x0 + 0.5, z.y + 3); ctx.lineTo(x0 + 0.5, z.y + z.h - 3); ctx.stroke();
+    }
+
+    // 頂部玩家色條
+    ctx.fillStyle = p.color;
+    roundRect(ctx, x0 + 4, z.y + 4, cw - 8, 3, 1.5); ctx.fill();
+
+    // 名字（省空間：僅編號，最後一位加「末」）
+    ctx.fillStyle = isActive ? '#4a4136' : '#6b6152';
+    ctx.font = '600 10px "Helvetica Neue", "PingFang TC", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillText(isLast ? `P${i + 1}·末` : `P${i + 1}`, x0 + cw / 2, z.y + 9);
+
+    // 已獲得麵包縮圖
+    const pbox = { x: x0 + 3, y: z.y + 22, w: cw - 6, h: z.h - 38 };
+    drawPiecesInBox(ctx, p.pieces, pbox, pulse * 0.25);
+
+    // 累計面積
+    const area = p.pieces.reduce((s, pc) => s + pc.area, 0);
+    ctx.fillStyle = '#8A7E6B';
+    ctx.font = '9px "Helvetica Neue", "PingFang TC", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText(area > 0 ? Math.round(area) : '—', x0 + cw / 2, z.y + z.h - 3);
+  }
+  ctx.restore();
+}
+
+// 回傳某座位在戰績列的中心點（給「獲得麵包飛入」動畫定位）。
+export function rosterCellCenter(g, z, seat) {
+  const cw = z.w / g.N;
+  return { x: z.x + cw * seat + cw / 2, y: z.y + z.h * 0.55 };
+}
