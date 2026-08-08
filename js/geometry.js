@@ -124,9 +124,13 @@ export function cutPolygonByPath(poly, path) {
   if (polyA.length < 3 || polyB.length < 3) return null;
   const areaA = polygonArea(polyA);
   const areaB = polygonArea(polyB);
-  // 太小的碎屑視為無效切割（手滑）。
   const total = areaA + areaB;
-  if (areaA < total * 0.005 || areaB < total * 0.005) return null;
+  // 面積守恒檢查：只有「乾淨一刀」（進出邊界剛好一次）兩塊面積才會等於原塊。
+  // 若切痕在凹形塊上多次進出邊界，first/last 交點會導致面積不守恒 → 視為模糊切割，拒絕。
+  const orig = polygonArea(poly);
+  if (Math.abs(total - orig) > orig * 0.01) return null;
+  // 太小的碎屑視為無效切割（手滑）。
+  if (areaA < orig * 0.005 || areaB < orig * 0.005) return null;
   return [polyA, polyB];
 }
 

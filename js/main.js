@@ -84,7 +84,11 @@ function draw() {
   if (!layout) return;
   R.clearCanvas(ctx, layout.W, layout.H);
   R.drawLeftoverZone(ctx, layout.plate);
-  if (g) R.drawPlatePieces(ctx, g.plate, layout.plate);
+  if (g) {
+    // 左上「剩下麵包」= 尚未進場的主麵包池 pool（若有）+ 修下的碎塊 scraps
+    const leftover = (g.pool ? [g.pool] : []).concat(g.scraps);
+    R.drawPlatePieces(ctx, leftover, layout.plate);
+  }
   if (!g) return;
 
   const phase = g.phase;
@@ -161,7 +165,7 @@ function onUp() {
     afterStateChange();
   } else {
     cutPath = [];
-    flashMessage('這一刀沒切到兩邊，再劃一次');
+    flashMessage('這一刀不乾淨：請從麵包一側劃到另一側（一刀切成兩塊），再試一次');
     draw();
   }
 }
@@ -280,7 +284,7 @@ document.querySelectorAll('.pc-btn').forEach((btn) => {
 let selectedCount = 0;
 document.getElementById('start-btn').addEventListener('click', () => {
   g = Game.createGame(selectedCount);
-  g.message = `${g.players[0].name}：選擇這回合的麵包`;
+  g.message = `${g.players[0].name}：選擇要分的麵包（全程只有這一塊）`;
   afterStateChange();
 });
 document.getElementById('random-bread').addEventListener('click', () => startBread(null));

@@ -55,7 +55,7 @@ export const BREADS = [
   {
     id: 'flower', name: '花形麵包',
     dough: '#F0DEB9', crust: '#C89A5F',
-    shape: (cx, cy, R) => radial(cx, cy, R, 72, (t) => 0.92 + 0.12 * Math.cos(t * 5)),
+    shape: (cx, cy, R) => radial(cx, cy, R, 72, (t) => 0.97 + 0.06 * Math.cos(t * 5)),
     decor: (ctx, R) => sesame(ctx, R, 5),
   },
   {
