@@ -32,10 +32,19 @@ function resize() {
   canvas.style.width = cssW + 'px';
   canvas.style.height = cssH + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const zoneW = Math.min(cssW * 0.32, 148);
+  const zoneH = zoneW * 0.94;
+  const zx = 8, zy = 8;
   layout = {
     W: cssW, H: cssH,
-    work: { cx: cssW / 2, cy: cssH * 0.40, R: Math.min(cssW, cssH) * 0.26 },
-    plate: { cx: cssW / 2, cy: cssH * 0.84, r: Math.min(cssW, cssH) * 0.15 },
+    // 中央大切割區（主焦點）
+    work: { cx: cssW / 2, cy: cssH * 0.52, R: Math.min(cssW, cssH) * 0.30 },
+    // 左上小盤「剩下麵包」獨立區
+    plate: {
+      x: zx, y: zy, w: zoneW, h: zoneH,
+      cx: zx + zoneW / 2, cy: zy + zoneH * 0.58,
+      r: Math.min(zoneW, zoneH) * 0.32,
+    },
   };
   draw();
 }
@@ -74,7 +83,7 @@ function movedPoly(v, t) {
 function draw() {
   if (!layout) return;
   R.clearCanvas(ctx, layout.W, layout.H);
-  R.drawPlate(ctx, layout.plate.cx, layout.plate.cy, layout.plate.r);
+  R.drawLeftoverZone(ctx, layout.plate);
   if (g) R.drawPlatePieces(ctx, g.plate, layout.plate);
   if (!g) return;
 

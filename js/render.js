@@ -13,6 +13,36 @@ export function clearCanvas(ctx, w, h) {
   ctx.fillRect(0, 0, w, h);
 }
 
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// 左上「剩下麵包」獨立區塊：虛線面板 + 標題 + 小盤子，和中央切割區明顯區隔。
+export function drawLeftoverZone(ctx, z) {
+  ctx.save();
+  roundRect(ctx, z.x, z.y, z.w, z.h, 12);
+  ctx.fillStyle = 'rgba(237,230,214,0.55)';
+  ctx.fill();
+  ctx.setLineDash([5, 4]);
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = '#D8CDB6';
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#8A7E6B';
+  ctx.font = '600 12px "Helvetica Neue", "PingFang TC", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('剩下麵包', z.cx, z.y + 15);
+  ctx.restore();
+  drawPlate(ctx, z.cx, z.cy, z.r);
+}
+
 export function drawPlate(ctx, cx, cy, r) {
   ctx.save();
   ctx.beginPath();
@@ -169,16 +199,20 @@ export function drawSlash(ctx, chain, alpha) {
   ctx.restore();
 }
 
-export function drawPlatePieces(ctx, pieces, area) {
-  const { cx, cy, r } = area;
+// 把剩餘塊縮小塞進左上小盤子（散佈排列）。
+export function drawPlatePieces(ctx, pieces, zone) {
+  const { cx, cy, r } = zone;
   const n = pieces.length;
   pieces.forEach((pc, i) => {
-    const a = (i / Math.max(1, n)) * Math.PI * 2;
-    const rr = n === 1 ? 0 : r * 0.42;
+    const a = (i / Math.max(1, n)) * Math.PI * 2 + 0.5;
+    const rr = n === 1 ? 0 : r * 0.45;
     const c = centroid(pc.poly);
-    const ox = cx + Math.cos(a) * rr - c.x;
-    const oy = cy + Math.sin(a) * rr - c.y;
-    const moved = pc.poly.map((p) => ({ x: p.x + ox, y: p.y + oy }));
-    drawPiece(ctx, moved, pc.breadIdx, { showDecor: true });
+    const b = bbox(pc.poly);
+    const maxD = Math.max(b.w, b.h) || 1;
+    const s = Math.min(0.5, (r * 0.7) / maxD);
+    const tx = cx + Math.cos(a) * rr;
+    const ty = cy + Math.sin(a) * rr;
+    const moved = pc.poly.map((p) => ({ x: tx + (p.x - c.x) * s, y: ty + (p.y - c.y) * s }));
+    drawPiece(ctx, moved, pc.breadIdx, { showDecor: false });
   });
 }
