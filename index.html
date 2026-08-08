@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>分麵包 — 公平分割遊戲</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <h1 class="title">分麵包</h1>
+      <p class="subtitle">最後裁切者 · 公平分割</p>
+    </header>
+
+    <!-- 訊息列 -->
+    <div id="message" class="message">選擇玩家人數開始遊戲</div>
+
+    <!-- 主畫布 -->
+    <div class="stage">
+      <canvas id="board"></canvas>
+    </div>
+
+    <!-- 底部控制區（依階段切換） -->
+    <div id="controls" class="controls">
+
+      <!-- 開始：選人數 -->
+      <section id="panel-setup" class="panel active">
+        <label class="field-label">玩家人數</label>
+        <div class="player-count">
+          <button class="pc-btn" data-n="2">2</button>
+          <button class="pc-btn" data-n="3">3</button>
+          <button class="pc-btn" data-n="4">4</button>
+          <button class="pc-btn" data-n="5">5</button>
+          <button class="pc-btn" data-n="6">6</button>
+          <button class="pc-btn" data-n="7">7</button>
+          <button class="pc-btn" data-n="8">8</button>
+          <button class="pc-btn" data-n="9">9</button>
+          <button class="pc-btn" data-n="10">10</button>
+        </div>
+        <button id="start-btn" class="primary" disabled>開始遊戲</button>
+      </section>
+
+      <!-- 選麵包 -->
+      <section id="panel-bread" class="panel">
+        <label class="field-label">選一種麵包（或隨機）</label>
+        <div id="bread-grid" class="bread-grid"></div>
+        <button id="random-bread" class="ghost">🎲 隨機麵包</button>
+      </section>
+
+      <!-- 切割提示 -->
+      <section id="panel-cut" class="panel">
+        <p class="hint">用手指／滑鼠在麵包上劃一刀（可劃不規則線）</p>
+        <button id="cut-undo" class="ghost">重劃</button>
+      </section>
+
+      <!-- 挑選一塊 -->
+      <section id="panel-pick" class="panel">
+        <p class="hint" id="pick-hint">點選你要保留的一塊</p>
+      </section>
+
+      <!-- 決策 合格／裁切 -->
+      <section id="panel-decision" class="panel">
+        <button id="pass-btn" class="primary">合格 Pass</button>
+        <button id="cut-btn" class="danger">裁切 Cut</button>
+      </section>
+
+      <!-- 回合／收尾 -->
+      <section id="panel-turnend" class="panel">
+        <button id="next-turn" class="primary">下一步</button>
+      </section>
+
+      <!-- 計分 -->
+      <section id="panel-score" class="panel">
+        <div id="scoreboard" class="scoreboard"></div>
+        <div class="score-actions">
+          <button id="next-round" class="primary">下一大回合</button>
+          <button id="restart" class="ghost">重新開始</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

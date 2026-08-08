@@ -1,0 +1,197 @@
+/* style.css — MUJI 無印良品風格：溫潤大地色、留白、細線、圓角、無多餘裝飾。 */
+
+:root {
+  --bg: #F4EFE6;
+  --surface: #FBF8F1;
+  --surface-2: #EDE6D6;
+  --line: #DcD2BE;
+  --text: #4A4034;
+  --text-soft: #8A7E6B;
+  --accent: #A6987C;      /* 溫潤褐 */
+  --accent-dark: #8A7B5E;
+  --danger: #C08560;      /* 陶土紅褐 */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 10px rgba(120, 95, 60, 0.08);
+  --font: "Helvetica Neue", "PingFang TC", "Hiragino Sans", "Noto Sans TC", sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  overscroll-behavior: none;
+}
+
+#app {
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px 20px;
+}
+
+.topbar { text-align: center; padding: 6px 0 2px; }
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 8px;
+  color: var(--text);
+}
+.subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--text-soft);
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  text-align: center;
+  color: var(--text);
+  min-height: 20px;
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-height: 320px;
+}
+#board { display: block; touch-action: none; }
+
+.controls { margin-top: 14px; }
+.panel { display: none; flex-direction: column; gap: 12px; }
+.panel.active { display: flex; }
+
+.field-label {
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+.player-count {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.pc-btn {
+  padding: 12px 0;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pc-btn:hover { border-color: var(--accent); }
+.pc-btn.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.bread-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.bread-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.bread-cell:hover { border-color: var(--accent); transform: translateY(-2px); }
+.bread-cell canvas { display: block; }
+.bread-cell span { font-size: 11px; color: var(--text-soft); }
+
+button {
+  font-family: var(--font);
+  font-size: 15px;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 1px;
+}
+.primary {
+  background: var(--accent);
+  color: #fff;
+}
+.primary:hover { background: var(--accent-dark); }
+.primary:disabled { background: var(--line); color: var(--text-soft); cursor: not-allowed; }
+.danger {
+  background: var(--danger);
+  color: #fff;
+}
+.danger:hover { filter: brightness(0.94); }
+.ghost {
+  background: transparent;
+  color: var(--text-soft);
+  border: 1px solid var(--line);
+}
+.ghost:hover { border-color: var(--accent); color: var(--text); }
+
+.hint { text-align: center; font-size: 14px; color: var(--text-soft); margin: 0; }
+
+#panel-decision { flex-direction: row; }
+#panel-decision button { flex: 1; }
+
+.scoreboard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.score-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+.score-row .rank { font-weight: 600; color: var(--accent-dark); }
+.score-row .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
+.score-row .pts { font-weight: 600; }
+.score-row.first { background: #F3ECD8; border-color: var(--accent); }
+
+.score-actions { display: flex; gap: 10px; }
+.score-actions button { flex: 1; }
+
+@media (max-width: 420px) {
+  .title { font-size: 22px; letter-spacing: 6px; }
+  .player-count, .bread-grid { gap: 6px; }
+  .pc-btn { padding: 10px 0; font-size: 15px; }
+}
